@@ -4,6 +4,9 @@
 
 'use strict';
 
+let getData = document.getElementById('getData');
+let clearData = document.getElementById('clearData');
+
 let changeColor = document.getElementById('changeColor');
 let removeColor = document.getElementById('removeColor');
 
@@ -12,7 +15,7 @@ chrome.storage.sync.get('color', function(data) {
 	changeColor.setAttribute('value', data.color);
 });
 
-changeColor.onclick = function(element) {
+getData.onclick = function(element) {
 	var pageNumber = document.getElementById('pageNumber').value;
 	
 	if(pageNumber == ''){
@@ -71,7 +74,14 @@ changeColor.onclick = function(element) {
 			}
 		});
 	}
-	
+};
+
+clearData.onclick = function(element) {
+	document.getElementById('pageNumber').value = '';
+	document.getElementById('details').innerHTML = '<h1>Details come here....</h1>';
+};
+
+changeColor.onclick = function(element) {
 	let color = element.target.value;
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.tabs.executeScript(
@@ -82,8 +92,6 @@ changeColor.onclick = function(element) {
 };
 
 removeColor.onclick = function(element) {
-	document.getElementById('details').innerHTML = '<h1>Details come here....</h1>';
-	
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.tabs.executeScript(
 			tabs[0].id,
