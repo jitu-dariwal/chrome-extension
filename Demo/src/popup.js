@@ -4,6 +4,7 @@
 
 'use strict';
 
+
 let getData = document.getElementById('getData');
 let clearData = document.getElementById('clearData');
 

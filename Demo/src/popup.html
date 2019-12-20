@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+		
 		<style>
 			body{
 				width:500px;
@@ -15,19 +17,33 @@
 		</style>
 	</head>
 	<body>
-		<input type="number" id="pageNumber" value="" placeholder="Enter page number"/>
-		<button id="getData">Get Details</button>
-		<button id="clearData">Clear</button>
-		
-		<div id="details">
-			<h1>Details will come here....</h1>			
+		<div class="container">
+			<div id="header" w3-include-html="header.html"></div>
+			<hr/>
+			
+			<input type="number" id="pageNumber" value="" placeholder="Enter page number"/>
+			<button id="getData" class="btn-info">Get Details</button>
+			<button id="clearData" class="btn-danger">Clear</button>
+			
+			<div id="details">
+				<h3>Details will come here....</h3>			
+			</div>
+			
+			<br/>
+			
+			<button class="btn btn-success" id="changeColor">Change Color</button>
+			<button class="btn btn-danger" id="removeColor">Remove Color</button>
+			
+			<hr/>
+			<div id="footer" w3-include-html="footer.html"></div>
 		</div>
 		
-		<br/>
-		<button id="changeColor">Change Color</button>
-		<button id="removeColor">Remove Color</button>
+		<script src="../assets/js/jquery-3.2.1.slim.min.js"></script>
+		<script src="../assets/js/popper.min.js"></script>
+		<script src="../assets/js/bootstrap.min.js"></script>
+		
+		<script src="../assets/js/common.js"></script>
 		
 		<script src="popup.js"></script>
-		
 	</body>
 </html>
