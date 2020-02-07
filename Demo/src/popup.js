@@ -8,6 +8,8 @@
 let getData = document.getElementById('getData');
 let clearData = document.getElementById('clearData');
 
+let redirectSite = document.getElementById('redirectSite');
+
 let changeColor = document.getElementById('changeColor');
 let removeColor = document.getElementById('removeColor');
 
@@ -79,7 +81,11 @@ getData.onclick = function(element) {
 
 clearData.onclick = function(element) {
 	document.getElementById('pageNumber').value = '';
-	document.getElementById('details').innerHTML = '<h1>Details come here....</h1>';
+	document.getElementById('details').innerHTML = '<h3>Details come here....</h3>';
+};
+
+redirectSite.onclick = function(element) {
+	alert('https:google.com');
 };
 
 changeColor.onclick = function(element) {
