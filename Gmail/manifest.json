@@ -2,7 +2,7 @@
 	"name": "Gmail Mails Filters",
 	"version": "1.0",
 	"description": "This Extension is usefull for filtering the gmail mails.",
-	"permissions": ["activeTab","declarativeContent","storage"],
+	"permissions": ["activeTab","declarativeContent","storage","tabs"],
 	"options_page": "options.html",
 	"background": {
 		"scripts": ["background.js"],
