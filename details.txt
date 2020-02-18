@@ -3,3 +3,54 @@ Urls :
 https://medium.com/@nashvail/i-built-a-chrome-extension-to-control-my-online-time-wastage-and-it-worked-bd1168e03b01
 
 https://chrome.google.com/webstore/detail/timewarp/mmmhadpnjmokjbmgamifipkjddhlfkhi?hl=en
+
+https://chrome.google.com/webstore/developer/
+https://chrome.google.com/webstore/devconsole/
+
+App Id : (ccjefgmjbaaboloplffkhdplfcohhnbk)
+
+Publish in the Chrome Web Store
+
+To publish your app to the Chrome Web Store, follow these steps:
+
+URL :: https://developer.chrome.com/apps/app_codelab_publish
+URL :: https://developer.chrome.com/webstore/publish
+
+1.  Create your app’s zip file
+2.  Create a developer account
+3.  Upload your app
+4.  Pick a payments system
+5.  Get app constraints and finish your app’s code
+6.  Get the app ID
+7.  Get the OAuth token
+8.  Finish the app
+9.  Provide store content
+10. Upload icon
+11. Upload at least one screen shots (1280x800, 640x400)
+12. Pay the developer signup fee
+13. Publish your app
+
+Product Details
+
+1.  Title
+2.  Summary
+3.  Detailed Description
+4.  Category
+5.  Language
+
+GRAPHIC ASSETS
+
+1.  Screenshots(1280x800 or 640x400 JPEG or 24-bit PNG (no alpha) At least one is required. max5)
+2.  Promo Video (optional)
+3.  Small Promo Tile(440x280 Canvas JPEG or 24-bit PNG (no alpha))
+	Large Promo Tile(920x680 Canvas JPEG or 24-bit PNG (no alpha))
+	Marquee Promo Tile(1400x560 Canvas JPEG or 24-bit PNG (no alpha))
+	
+ADDITIONAL FIELDS
+
+1. Official URL
+2. Homepage URL
+3. Support URL
+4. Mature Content
+5. Google Analytics ID
+

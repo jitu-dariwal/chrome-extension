@@ -1,9 +1,8 @@
 {
-	"name": "Gmail Mails Filters",
+	"name": "Filters For Gmail",
 	"version": "1.0",
-	"description": "This Extension is usefull for filtering the gmail mails.",
-	"permissions": ["activeTab","declarativeContent","storage","tabs"],
-	"options_page": "options.html",
+	"description": "An extension that makes searching of gmail emails easy.",
+	"permissions": ["activeTab","declarativeContent","storage","tabs","alarms","notifications"],
 	"background": {
 		"scripts": ["background.js"],
 		"persistent": false
@@ -11,17 +10,17 @@
 	"page_action": {
 		"default_popup": "src/popup.html",
 		 "default_icon": {
-			"16": "assets/images/icons/icon.png",
-			"32": "assets/images/icons/icon.png",
-			"48": "assets/images/icons/icon.png",
-			"128": "assets/images/icons/icon.png"
+			"16": "assets/images/icons/16x16.png",
+			"32": "assets/images/icons/32x32.png",
+			"48": "assets/images/icons/48x48.png",
+			"128": "assets/images/icons/128x128.png"
 		}
     },
 	"icons": {
-		"16": "assets/images/icons/icon.png",
-		"32": "assets/images/icons/icon.png",
-		"48": "assets/images/icons/icon.png",
-		"128": "assets/images/icons/icon.png"
+		"16": "assets/images/icons/16x16.png",
+		"32": "assets/images/icons/32x32.png",
+		"48": "assets/images/icons/48x48.png",
+		"128": "assets/images/icons/128x128.png"
     },
 	"manifest_version": 2
 }

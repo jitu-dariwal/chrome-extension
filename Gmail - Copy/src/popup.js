@@ -41,13 +41,13 @@ $('.tempClass').on('change', '.searchOption', function(){
 });
 
 $('.search').click(function(){
-	var value = $('.searchValue').val().trim();
-	var optionValue = $('.searchOption').val().trim();
+	var value = $('.searchValue').val();
+	var optionValue = $('.searchOption').val();
 	
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.tabs.executeScript(
 			tabs[0].id,
-			{code: 'document.querySelectorAll(\'[name="q"]\')[0].value =\''+optionValue+':'+value+'\';document.querySelectorAll("button").forEach(item => {if(item.getAttribute(\'aria-label\') == \'Search Mail\'){item.click();}});'
+			{code: 'document.querySelectorAll(\'[name="q"]\')[0].value = \''+optionValue+':'+value+'\';document.querySelectorAll("button").forEach(item => {if(item.getAttribute(\'aria-label\') == \'Search Mail\'){item.click();}});'
 			});
 	});
 });
@@ -56,6 +56,8 @@ document.querySelectorAll('.filterMail').forEach(item => {
 	item.addEventListener('click', event => {
 		var key = event.target.getAttribute("data-key");
 		var value = event.target.getAttribute("data-value");
+		//alert(key+' and '+value)
+		
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 			chrome.tabs.executeScript(
 				tabs[0].id,
