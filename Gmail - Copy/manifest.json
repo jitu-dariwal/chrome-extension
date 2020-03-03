@@ -1,0 +1,27 @@
+{
+	"name": "Filters For Gmail",
+	"version": "1.0",
+	"description": "This Extension is usefull for filtering the gmail mails.",
+	"permissions": ["activeTab","declarativeContent","storage","tabs","alarms","notifications"],
+	"options_page": "options.html",
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+    },
+	"page_action": {
+		"default_popup": "src/popup.html",
+		 "default_icon": {
+			"16": "assets/images/icons/icon.png",
+			"32": "assets/images/icons/icon.png",
+			"48": "assets/images/icons/icon.png",
+			"128": "assets/images/icons/icon.png"
+		}
+    },
+	"icons": {
+		"16": "assets/images/icons/icon.png",
+		"32": "assets/images/icons/icon.png",
+		"48": "assets/images/icons/icon.png",
+		"128": "assets/images/icons/icon.png"
+    },
+	"manifest_version": 2
+}

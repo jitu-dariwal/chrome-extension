@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../assets/css/bootstrap-datepicker.min.css">
+		<link rel="stylesheet" href="../assets/css/custom.css">
+		
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div id="header" class="border-bottom bg-light col-12 mb-2" w3-include-html="header.html"></div>
+			</div>	
+			
+			<div class="row tempClass">				
+				<div class="col-lg-12">
+					<div class="input-group ">
+						<div class="input-group-prepend">
+							<select class="input-group-text searchOption  bg-transparent">
+								<option value="from">From: </option>
+								<option value="to">To: </option>
+								<option value="cc">CC: </option>
+								<option value="subject">Subject: </option>
+								<option value="list">List: </option>
+								<option value="filename">Filename: </option>
+								<option value="after">After: </option>
+								<option value="before">Before: </option>
+								<option value="older">Older: </option>
+								<option value="newer">Newer: </option>
+								<option value="older_than">Older Than: </option>
+								<option value="newer_than">Newer Than: </option>
+								<option value="size">Size: </option>
+								<option value="larger">Larger: </option>
+								<option value="smaller">Smaller: </option>
+							</select>
+						</div>
+						
+						<input type="text" class="form-control searchValue" id="searchValue" placeholder="Type here...">
+						
+						<div class="input-group-append">
+							<span class="input-group-text btn btn-success search">Search</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12 py-1 mt-2 border-top">
+					<h6>Category: </h6>
+					<div class="badge-category">
+						<span class="badge badge-danger btn filterMail" data-key="has" data-value="attachment" data-toggle="tooltip" title="Attachment!"><i class="fas fa-paperclip" aria-hidden="true" data-key="has" data-value="attachment"></i></span>
+						
+						<span class="badge badge-secondary btn filterMail" data-key="has" data-value="drive" data-toggle="tooltip" title="Drive!"><i class="fas fa-hdd" aria-hidden="true" data-key="has" data-value="drive"></i></span>
+						
+						<span class="badge badge-info btn filterMail" data-key="has" data-value="document" data-toggle="tooltip" title="Document!"><i class="fas fa-file-upload" aria-hidden="true" data-key="has" data-value="document"></i></span>
+						
+						<span class="badge badge-dark btn filterMail" data-key="has" data-value="spreadsheet" data-toggle="tooltip" title="Spreadsheet!"><i class="fas fa-file-excel" aria-hidden="true" data-key="has" data-value="spreadsheet"></i></span>
+						
+						<span class="badge badge-info btn filterMail" data-key="has" data-value="presentation" data-toggle="tooltip" title="Presentation!"><i class="fas fa-file-powerpoint" aria-hidden="true" data-key="has" data-value="presentation"></i></span>
+						
+						<span class="badge badge-warning btn filterMail" data-key="has" data-value="yellow-star" data-toggle="tooltip" title="Yellow-star!"><i class="fas fa-star" aria-hidden="true" data-key="has" data-value="yellow-star"></i></span>
+						
+						<span class="badge btn bg-purple filterMail" style="background-color:#9C27B0;color:white;" data-key="has" data-value="purple-star" data-toggle="tooltip" title="Purple-star!"><i class="fas fa-star" aria-hidden="true" data-key="has" data-value="purple-star"></i></span>
+						
+						<span class="badge badge-primary btn filterMail" data-key="has" data-value="blue-info" data-toggle="tooltip" title="Blue-info!"><i class="fas fa-info-circle" aria-hidden="true" data-key="has" data-value="blue-info"></i></span>
+						
+						<span class="badge badge-success btn filterMail" data-key="has" data-value="userlabels" data-toggle="tooltip" title="User-label!"><i class="fas fa-user" aria-hidden="true" data-key="has" data-value="userlabels"></i></span>
+						
+						<span class="badge badge-warning btn filterMail" data-key="has" data-value="nouserlabels" data-toggle="tooltip" title="No User-label!"><i class="fas fa-user-times" aria-hidden="true" data-key="has" data-value="nouserlabels"></i></span>
+						
+						
+						
+						<span class="badge badge-primary btn filterMail" data-key="category" data-value="primary" data-toggle="tooltip" title="Primary!"><i class="fas fa-tag" aria-hidden="true" data-key="category" data-value="primary"></i></span>
+						
+						<span class="badge badge-danger btn filterMail" data-key="category" data-value="social" data-toggle="tooltip" title="Social!"><i class="fas fa-share-square" aria-hidden="true" data-key="category" data-value="social"></i></span>
+						
+						<span class="badge badge-warning btn filterMail" data-key="category" data-value="promotions" data-toggle="tooltip" title="Promotions!"><i class="fas fa-ad" aria-hidden="true" data-key="category" data-value="promotions"></i></span>
+						
+						<span class="badge badge-info btn filterMail" data-key="category" data-value="updates" data-toggle="tooltip" title="Updates!"><i class="fas fa-user-edit" aria-hidden="true" data-key="category" data-value="updates"></i></span>
+						
+						<span class="badge badge-dark btn filterMail" data-key="category" data-value="forums" data-toggle="tooltip" title="Forums!"><i class="fa fa-comments" aria-hidden="true" data-key="category" data-value="forums"></i></span>
+						
+						<span class="badge badge-secondary btn filterMail" data-key="category" data-value="reservations" data-toggle="tooltip" title="Reservations!"><i class="fa fa-lightbulb" aria-hidden="true" data-key="category" data-value="reservations"></i></span>
+						
+						<span class="badge badge-success btn filterMail" data-key="category" data-value="purchases" data-toggle="tooltip" title="Purchases!"><i class="fas fa-money-check-alt" aria-hidden="true" data-key="category" data-value="purchases"></i></span>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12 py-1 mt-2 border-top">
+					<h6>Label :</h6>
+					<div class="badge-label">
+						<span class="badge badge-pill badge-danger btn filterMail" data-key="label" data-value="is:buzz" data-toggle="tooltip" title="Buzz!">Buzz</span>
+						
+						<span class="badge badge-pill badge-warning btn filterMail" data-key="label" data-value="is:chats" data-toggle="tooltip" title="Chats!">Chats</span>
+						
+						<span class="badge badge-pill badge-info btn filterMail" data-key="label" data-value="is:draft" data-toggle="tooltip" title="Draft!">Draft</span>
+						
+						<span class="badge badge-pill badge-dark btn filterMail" data-key="label" data-value="is:important" data-toggle="tooltip" title="Important!">Important</span>
+						
+						<span class="badge badge-pill badge-primary btn filterMail" data-key="label" data-value="is:mute" data-toggle="tooltip" title="Mute!">Mute</span>
+						
+						<span class="badge badge-pill badge-secondary btn filterMail" data-key="label" data-value="is:notes" data-toggle="tooltip" title="Notes!">Notes</span>
+						
+						<span class="badge badge-pill badge-success btn filterMail" data-key="label" data-value="is:read" data-toggle="tooltip" title="Read Mail!">Read Mail</span>
+						
+						<span class="badge badge-pill badge-danger btn filterMail" data-key="label" data-value="is:starred" data-toggle="tooltip" title="Starred Mail!">Starred Mail</span>
+						
+						<span class="badge badge-pill badge-warning btn filterMail" data-key="label" data-value="is:snoozed" data-toggle="tooltip" title="Snoozed!">Snoozed</span>
+						
+						<span class="badge badge-pill badge-info btn filterMail" data-key="label" data-value="is:trash" data-toggle="tooltip" title="Trash!">Trash</span>
+						
+						<span class="badge badge-pill badge-dark btn filterMail" data-key="label" data-value="is:unread" data-toggle="tooltip" title="Unread!">Unread</span>
+						
+						<span class="badge badge-pill badge-primary btn filterMail" data-key="label" data-value="is:voicemail" data-toggle="tooltip" title="Voicemail!">Voicemail</span>
+					</div>
+				</div>
+			</div>	
+			
+			<div class="row">
+				<div class="col-lg-12 text-center border-top mt-2 pt-2">
+					<span class="btn px-4 btn-sm btn-success filterMail" data-key="label" data-value="all" data-toggle="tooltip" title="All!">All</span>
+				</div>
+			</div> 	
+			
+			<div class="row">		
+				<div id="footer" class="border-top bg-light col-12 mt-2" w3-include-html="footer.html"></div>
+			</div>	
+		</div>
+		
+		<script src="../assets/js/jquery-3.2.1.slim.min.js"></script>
+		<script src="../assets/js/popper.min.js"></script>
+		<script src="../assets/js/bootstrap.min.js"></script>
+		
+		<script src="../assets/js/bootstrap-datepicker.min.js"></script>
+		
+		<script src="../assets/js/common.js"></script>
+		
+		<script src="popup.js"></script>
+	</body>
+</html>
