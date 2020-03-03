@@ -1,0 +1,6 @@
+.popupClass{width: 120px; background-color: red; display: flex; position:fixed; top:80%; right:2%;}
+
+.close {
+  position: absolute;
+  right: 0;
+}

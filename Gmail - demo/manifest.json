@@ -2,13 +2,14 @@
 	"name": "Gmail Mails Filters",
 	"version": "1.0",
 	"description": "This Extension is usefull for filtering the gmail mails.",
-	"permissions": ["activeTab","declarativeContent","storage"],
+	"permissions": ["activeTab","tabs","declarativeContent","storage","notifications", "http://local.notes.com/*", "http://192.168.5.109/*", "https://*/"],
 	"background": {
 		"scripts": ["background.js"],
 		"persistent": false
 	},
 	
     "page_action": {
+		"default_title": "Make this page green",
 		"default_popup": "popup.html",
 		"default_icon": {
 			"16": "images/get_started16.png",
@@ -25,5 +26,20 @@
 		"128": "images/get_started128.png"
     },
 	"options_page": "options.html",
-	"manifest_version": 2
+	"manifest_version": 2,
+	"content_scripts": [{ 
+		"run_at" :"document_end",
+		"matches": ["http://local.notes.com/*", "http://192.168.5.109/*"],
+		"js": ["src/script.js"],
+		"css":["src/mycss.css"] }
+	],
+	"commands": {
+	  "_execute_page_action": {
+		"suggested_key": {
+		  "default": "Ctrl+V",
+		  "windows": "Ctrl+B",
+		  "mac": "Alt+Shift+P"
+		}
+	  }
+	}
 }
