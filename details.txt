@@ -1,0 +1,6 @@
+# Chronus
+
+Chronus is a "new-tab" chrome extension that tracks time you waste online in order to increase your productivity. You can read more about this project here http://goo.gl/opBljL. If you're a developer and can help improve this project, please do so. Any Contribution is appreciated.
+### Installation 
+* Head over to https://github.com/nashmaniac/Chronus, chances are you're already here.
+* Click on the "Download Zip" button visible at the bottom right corner.
