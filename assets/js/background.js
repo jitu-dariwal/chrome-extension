@@ -14,7 +14,7 @@ var totalTimeOnWebsites;
 var isUserActive;
 
 // Stores the current date or the days that have passed since the UTC till today
-var today;
+var today = new Date();
 
 // Stores the name of the key that stores the data for the current date 
 var todayStorageName;
@@ -23,6 +23,122 @@ var todayStorageName;
 var websitesToTrack;
 
 var isFirstRun = false;
+
+
+chrome.runtime.onInstalled.addListener(function(details) {
+	
+	//console.log("Details : ", details);
+	if(details.reason == "install"){
+		
+		isFirstRun = true;
+        
+		todayStorageName = "DataOf-" + todayStr('dmy', '');
+        totalTimeOnWebsites = 0;
+        
+		websitesToTrack = ["twitter.com", "facebook.com", "instagram.com"];
+		
+		// Initialize the data objec that is to be placed in the localStorage
+        var data = {};
+		
+		data['settings'] = {};
+		
+		data['settings']['alertTime'] = 30; // time in seconds
+		data['settings']['numberOfDays'] = 3; // Number of days, to hold data of that days 
+		data['settings']['websitesToTrack'] = JSON.stringify(websitesToTrack);
+		
+		data[todayStorageName] = {};
+		
+        // Store the values in the localStorage
+        data[todayStorageName]['totalTime'] = 0;
+        data[todayStorageName]["today"] = today;
+        data[todayStorageName]["todayStr"] = todayStr('dmy', '');
+        data[todayStorageName]["trackData"] = {};
+        data[todayStorageName]["sitesLocked"] = false;
+		
+        chrome.storage.local.set(data, function(){});
+		
+		console.log(data);
+	}else{
+		//chrome.storage.local.get(null, function(data){ console.log(data) });
+	}
+});
+
+
+startUp();
+
+// Do all the startup tasks
+function startUp() {
+    //Initialize the totalTimeOnWebsites variable to the data gained from the local storage of the user
+    chrome.storage.local.get(null, function(result){
+        websitesToTrack = JSON.parse(result.settings.websitesToTrack);
+    });
+	
+    // Updating the ActiveTabUrl during initialization
+    updateActiveTabUrl();
+
+    // Register Events
+    registerEvents(); // This one is important better left untouched
+
+    // Setting isUserActive as true while starting up
+    isUserActive = true;
+
+    updateData();
+	
+    // Setting up the listener that will check if a new day is there
+    setInterval(function(){
+    if(isNewDay()){
+        updateData();
+      }
+    }, 1000);
+
+}
+
+
+
+function registerEvents() {
+    // Registering for onActivated event
+    // This is fired when the active tab changes
+    chrome.tabs.onActivated.addListener(function(activeInfo) {
+		chrome.pageAction.show(activeTabId);
+        updateActiveTabUrl();
+    });
+
+    // Registering for onChanged event
+    // This is fired when the url of a tab changes
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+        if (changeInfo.url)
+			chrome.pageAction.show(tabId);
+		
+		updateActiveTabUrl();
+    });
+	
+	//For highlighted tab as well
+	// Registering for highlighted the tab on chnage tab
+    // This is fired when the tab is change
+	chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab){
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { // The argument of the call back function is an array of tabs
+			
+			if (tabs.length > 0)
+				chrome.pageAction.show(tabId.tabIds['0']);
+		});
+		
+		updateActiveTabUrl();
+	});
+
+    // Registering for onFocusChanged event
+    // This is fired when the active chrome window is changed.
+    chrome.windows.onFocusChanged.addListener(function(windowId) {
+        // This happens if all the windows are out of focus
+        // Using this condition to infer that the user is inactive
+        if (windowId === chrome.windows.WINDOW_ID_NONE) {
+            isUserActive = false;
+        } else {
+            isUserActive = true;
+        }
+        updateActiveTabUrl();
+    });
+}
+
 
 // Returns the current website being used
 function getActiveWebsite() {
@@ -34,74 +150,52 @@ function isUserActiveNow() {
     return isUserActive;
 }
 
-chrome.runtime.onInstalled.addListener(function(details) {
-	
-	//console.log("Details : ", details);
-	if(details.reason == "install"){
-		
-		isFirstRun = true;
-        
-        // Assign initial values to the variables
-        today = new Date();
-		
-		var getDate = String(today.getDate()).padStart(2, '0');
-		var getMonth = String((today.getMonth() + 1)).padStart(2, '0');
-		var getYear = String(today.getFullYear());
-		
-		var todayStr = getDate+getMonth+getYear;
-		
-		todayStorageName = "DataOf-" +todayStr;
-        totalTimeOnWebsites = 0;
-        websitesToTrack = ["twitter.com", "facebook.com", "instagram.com"];
-		
-		// Initialize the data objec that is to be placed in the localStorage
-        var data = {};
-		
-		data[todayStorageName] = {};
-		
-        // Store the values in the localStorage
-        data[todayStorageName]['totalTime'] = totalTimeOnWebsites;
-        data[todayStorageName]["today"] = today;
-        data[todayStorageName]["todayStr"] = todayStr;
-        data[todayStorageName]["trackData"] = JSON.stringify(websitesToTrack);
-        data[todayStorageName]["sitesLocked"] = false;
-		
-        chrome.storage.local.set(data, function(){});
-	}else{
-		chrome.storage.local.get(null, function(result){
-			console.log("Result : ", result);
-		});
-	}
-});
-
-
-//For highlighted tab as well
-chrome.tabs.onHighlighted.addListener(checkForValidUrl);
-
-function checkForValidUrl(tabId, changeInfo, tab) {
-	//alert(chrome.runtime.getURL('/'));
-	
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { // The argument of the call back function is an array of tabs
-		
-        if (tabs.length > 0) {
-            //tabs[0].url;
-			chrome.pageAction.show(tabId.tabIds['0']);
+// Finds the current tab in the current window
+// Updates the activeTabUrl global variable
+function updateActiveTabUrl() {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { // The argument of the call back function is an array of tabs
+        if (tabs.length < 1) { // If there are no tabs in the window, how the fuck is that possible ? let us see
+            activeTabUrl = null;
+        } else {
+            activeTabUrl = tabs[0].url;
         }
     });
-};
+}
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.url) {
-        chrome.pageAction.show(tabId);
+/*
+* Function  : extractDomain(url of the website)
+* Usage : currentDomain = extractDomain("http://www.google.com/gmail/")
+* ----------------------------------------------------------------------
+* Extracts the domain name of the website and returns it as a string.
+* E.g. extractDomain("http://www.google.com/gmail/") would return "google.com"
+*/
+function extractDomain(str) {
+    // Removing the protocol and www prefixes
+    var strList = str.split(":\/\/");
+    if (strList.length > 1) {
+        str = strList[1];
+    } else {
+        str = strList[0];
     }
-});
+    str = str.replace(/www\./g,'');
+    
+    // Extracting the domain name from full URL
+    var domainName = str.split('\/')[0];
+    return domainName;
+}
 
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-  var activeWindowId = activeInfo.windowId;
-  var activeTabId = activeInfo.tabId;
-  
-  //alert('window : '+activeWindowId+'tab id : '+ activeTabId)
-});
+
+/* 
+* Function : getTimeOnTwitter()
+* -------------------------------
+* Returns the amount of time in seconds spent on 
+* the website www.twitter.com and www.facebook.com
+*/
+
+function getTimeOnFbTwitter(){
+    return totalTimeOnWebsites;
+}
+
 
 /*
 * Function : numDaysSinceUTC()
@@ -116,6 +210,25 @@ function numDaysSinceUTC(){
     var today = new Date();
     var utcMili = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()); // miliseconds since UTC
     return (utcMili/ NUM_MILI_IN_A_DAY);
+}
+
+/*
+* Function : todayStr()
+* -----------------------
+* This function return today date string formate, date formate is given.
+*/
+
+function todayStr(formate, separator = '-'){
+	var getDate = String(today.getDate()).padStart(2, '0');
+	var getMonth = String((today.getMonth() + 1)).padStart(2, '0');
+	var getYear = String(today.getFullYear());
+	
+	if(formate == 'dmy')
+		return getDate + separator + getMonth + separator + getYear;
+	else if(formate == 'mdy')
+		return getMonth + separator + getDate + separator + getYear;
+	else if(formate == 'ymd')
+		return getYear + separator + getMonth + separator + getDate;
 }
 
 /*
