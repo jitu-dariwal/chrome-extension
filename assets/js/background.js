@@ -57,12 +57,13 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		
         chrome.storage.local.set(data, function(){});
 		
-		console.log(data);
+		startUp('true');
+		
+		//console.log(data);
 	}else{
 		//chrome.storage.local.get(null, function(data){ console.log(data) });
 	}
 });
-
 
 startUp();
 
@@ -70,7 +71,10 @@ startUp();
 function startUp() {
     //Initialize the totalTimeOnWebsites variable to the data gained from the local storage of the user
     chrome.storage.local.get(null, function(result){
-        websitesToTrack = JSON.parse(result.settings.websitesToTrack);
+        //console.log("Setting : ", result.settings);
+		
+		if (result.hasOwnProperty('settings'))
+			websitesToTrack = JSON.parse(result.settings.websitesToTrack);
     });
 	
     // Updating the ActiveTabUrl during initialization
@@ -81,25 +85,13 @@ function startUp() {
 
     // Setting isUserActive as true while starting up
     isUserActive = true;
-
-    updateData();
-	
-    // Setting up the listener that will check if a new day is there
-    setInterval(function(){
-    if(isNewDay()){
-        updateData();
-      }
-    }, 1000);
-
 }
-
-
 
 function registerEvents() {
     // Registering for onActivated event
     // This is fired when the active tab changes
     chrome.tabs.onActivated.addListener(function(activeInfo) {
-		chrome.pageAction.show(activeTabId);
+		chrome.pageAction.show(activeInfo.tabId);
         updateActiveTabUrl();
     });
 
