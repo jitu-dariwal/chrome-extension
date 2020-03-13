@@ -4,6 +4,9 @@
 
 'use strict';
 
+// Global fix domains for user don't has permission for change it.
+var defaultFixDomains = ["twitter.com", "facebook.com", "instagram.com"];
+
 // Global variable to store the active tab url
 var activeTabUrl = "";
 
@@ -35,7 +38,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		todayStorageName = "DataOf-" + todayStr('dmy', '');
         totalTimeOnWebsites = 0;
         
-		websitesToTrack = ["twitter.com", "facebook.com", "instagram.com"];
+		websitesToTrack = defaultFixDomains;
 		
 		// Initialize the data objec that is to be placed in the localStorage
         var data = {};
@@ -45,6 +48,20 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		data['settings']['alertTime'] = 30; // time in seconds
 		data['settings']['numberOfDays'] = 3; // Number of days, to hold data of that days 
 		data['settings']['websitesToTrack'] = JSON.stringify(websitesToTrack);
+		
+		/* Below code for set test row data */
+			var demoDate = "DataOf-06032020";
+			
+			data[demoDate] = {};
+			
+			// Store the values in the localStorage
+			data[demoDate]['totalTime'] = 0;
+			data[demoDate]["today"] = today;
+			data[demoDate]["todayStr"] = todayStr('dmy', '');
+			data[demoDate]["trackData"] = {};
+			data[demoDate]["sitesLocked"] = false;
+		
+		/* End code for set test row data */
 		
 		data[todayStorageName] = {};
 		
@@ -69,13 +86,7 @@ startUp();
 
 // Do all the startup tasks
 function startUp() {
-    //Initialize the totalTimeOnWebsites variable to the data gained from the local storage of the user
-    chrome.storage.local.get(null, function(result){
-        //console.log("Setting : ", result.settings);
-		
-		if (result.hasOwnProperty('settings'))
-			websitesToTrack = JSON.parse(result.settings.websitesToTrack);
-    });
+	updateWebSites();
 	
     // Updating the ActiveTabUrl during initialization
     updateActiveTabUrl();
@@ -87,12 +98,25 @@ function startUp() {
     isUserActive = true;
 }
 
+function updateWebSites(){
+	//Initialize the totalTimeOnWebsites variable to the data gained from the local storage of the user
+    chrome.storage.local.get(null, function(result){
+        console.log("Result : ", result);
+        //console.log("Setting : ", result.settings);
+		
+		if (result.hasOwnProperty('settings') && result.settings.hasOwnProperty('websitesToTrack'))
+			websitesToTrack = JSON.parse(result.settings.websitesToTrack);
+    });
+}
+
 function registerEvents() {
     // Registering for onActivated event
     // This is fired when the active tab changes
     chrome.tabs.onActivated.addListener(function(activeInfo) {
 		chrome.pageAction.show(activeInfo.tabId);
         updateActiveTabUrl();
+		
+		changeTabAction()
     });
 
     // Registering for onChanged event
@@ -102,6 +126,8 @@ function registerEvents() {
 			chrome.pageAction.show(tabId);
 		
 		updateActiveTabUrl();
+		
+		changeTabAction()
     });
 	
 	//For highlighted tab as well
@@ -115,11 +141,14 @@ function registerEvents() {
 		});
 		
 		updateActiveTabUrl();
+		
+		changeTabAction()
 	});
 
     // Registering for onFocusChanged event
     // This is fired when the active chrome window is changed.
     chrome.windows.onFocusChanged.addListener(function(windowId) {
+		
         // This happens if all the windows are out of focus
         // Using this condition to infer that the user is inactive
         if (windowId === chrome.windows.WINDOW_ID_NONE) {
@@ -131,10 +160,16 @@ function registerEvents() {
     });
 }
 
+function changeTabAction(){
+	//alert("tab action");
+}
 
 // Returns the current website being used
 function getActiveWebsite() {
-    return extractDomain(activeTabUrl);
+	if(activeTabUrl != null)
+		return extractDomain(activeTabUrl);
+	else
+		return false;
 }
 
 // Returns whether the user is active right now or not
@@ -202,6 +237,25 @@ function numDaysSinceUTC(){
     var today = new Date();
     var utcMili = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()); // miliseconds since UTC
     return (utcMili/ NUM_MILI_IN_A_DAY);
+}
+
+/*
+* Function : dateStr()
+* -----------------------
+* This function return date string formate, date formate is given.
+*/
+
+function dateStr(date, formate, separator = '-'){
+	var getDate = String(date.getDate()).padStart(2, '0');
+	var getMonth = String((date.getMonth() + 1)).padStart(2, '0');
+	var getYear = String(date.getFullYear());
+	
+	if(formate == 'dmy')
+		return getDate + separator + getMonth + separator + getYear;
+	else if(formate == 'mdy')
+		return getMonth + separator + getDate + separator + getYear;
+	else if(formate == 'ymd')
+		return getYear + separator + getMonth + separator + getDate;
 }
 
 /*
