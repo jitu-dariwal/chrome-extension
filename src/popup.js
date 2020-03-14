@@ -138,10 +138,10 @@ $(document).ready(function(){
 	});
 	
 	$('#check').click(function(){
-		alert(backgroundPage.getActiveWebsite());
+		//alert(backgroundPage.getActiveWebsite());
 		
 		chrome.storage.local.get(null, function(result){
-			//console.log("call", result);
+			console.log("call", result);
 		});
 	});
 });

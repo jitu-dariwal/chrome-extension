@@ -76,7 +76,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		
 		startUp('true');
 		
-		//console.log(data);
+		console.log(data);
 	}else{
 		//chrome.storage.local.get(null, function(data){ console.log(data) });
 	}
@@ -86,6 +86,7 @@ startUp();
 
 // Do all the startup tasks
 function startUp() {
+	
 	updateWebSites();
 	
     // Updating the ActiveTabUrl during initialization
@@ -96,12 +97,38 @@ function startUp() {
 
     // Setting isUserActive as true while starting up
     isUserActive = true;
+	
+	updateData();
+    // Setting up the listener that will check if a new day is there
+    setInterval(function(){
+		if(isNewDay()){
+			today = new Date();
+			
+			todayStorageName = "DataOf-" + dateStr('dmy', '');
+			
+			// Initialize the data objec that is to be placed in the localStorage
+			var data = {};
+			
+			data[todayStorageName] = {};
+				
+			// Store the values in the localStorage
+			data[todayStorageName]['totalTime'] = 0;
+			data[todayStorageName]["today"] = today;
+			data[todayStorageName]["todayStr"] = dateStr('dmy', '');
+			data[todayStorageName]["trackData"] = {};
+			data[todayStorageName]["sitesLocked"] = false;
+			
+			chrome.storage.local.set(data);
+			
+			updateData();
+		}
+    }, 1000);
 }
 
 function updateWebSites(){
 	//Initialize the totalTimeOnWebsites variable to the data gained from the local storage of the user
     chrome.storage.local.get(null, function(result){
-        console.log("Result : ", result);
+        //console.log("Result : ", result);
         //console.log("Setting : ", result.settings);
 		
 		if (result.hasOwnProperty('settings') && result.settings.hasOwnProperty('websitesToTrack'))
@@ -158,6 +185,38 @@ function registerEvents() {
         }
         updateActiveTabUrl();
     });
+}
+
+async function updateData(){
+	chrome.storage.local.get('settings', function(setting){
+		var validateKeyArray = ['settings'];
+		validateKeyArray.push(todayStorageName);
+		
+		for(var j=1; j <= Number(setting.numberOfDays); j++){
+			var dateObj = new Date();
+			
+			dateObj.setDate(dateObj.getDate() - j);
+			
+			var keyStr = "DataOf-" + dateStr(dateObj, 'dmy', '');
+			
+			validateKeyArray.push(keyStr);
+		}
+		
+		chrome.storage.local.get(null, function(result){
+			for(var k in result){
+				//console.log(result[k]);
+				if (!(k in validateKeyArray)){
+					chrome.storage.local.remove(k)
+				}
+			}
+			
+			/* $.each(result, function(k,v){
+				if ($.inArray(k, validateKeyArray) == -1){
+					chrome.storage.local.remove(k)
+				}
+			}); */
+		});
+	})
 }
 
 function changeTabAction(){
@@ -232,10 +291,9 @@ function getTimeOnFbTwitter(){
 * January 1 1970, used in the process of checking 
 * days that have passed
 */
-function numDaysSinceUTC(){
+function numDaysSinceUTC(todayDate = new Date()){
     var NUM_MILI_IN_A_DAY = 86400000;
-    var today = new Date();
-    var utcMili = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()); // miliseconds since UTC
+    var utcMili = Date.UTC(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate()); // miliseconds since UTC
     return (utcMili/ NUM_MILI_IN_A_DAY);
 }
 
@@ -284,7 +342,10 @@ function todayStr(formate, separator = '-'){
 */
 
 function isNewDay(){
-    return (numDaysSinceUTC() - today >= 1);
+	var todayDate = numDaysSinceUTC();
+	var todayVarDate = numDaysSinceUTC(today);
+	
+	return (todayDate - todayVarDate >= 1);
 }
 
 function todayTimeData(){
