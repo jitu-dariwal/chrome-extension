@@ -20,7 +20,7 @@ var isUserActive;
 var today = new Date();
 
 // Stores the name of the key that stores the data for the current date 
-var todayStorageName;
+var todayStorageName = "DataOf-" + todayStr('dmy', '');
 
 // An array of strings that hold the domain names of the websites that are supposed to be checked
 var websitesToTrack;
@@ -101,10 +101,12 @@ function startUp() {
 	updateData();
     // Setting up the listener that will check if a new day is there
     setInterval(function(){
+		//alert(today)
 		if(isNewDay()){
+			alert(23)
 			today = new Date();
 			
-			todayStorageName = "DataOf-" + dateStr('dmy', '');
+			todayStorageName = "DataOf-" + dateStr(today, 'dmy', '');
 			
 			// Initialize the data objec that is to be placed in the localStorage
 			var data = {};
@@ -114,7 +116,7 @@ function startUp() {
 			// Store the values in the localStorage
 			data[todayStorageName]['totalTime'] = 0;
 			data[todayStorageName]["today"] = today;
-			data[todayStorageName]["todayStr"] = dateStr('dmy', '');
+			data[todayStorageName]["todayStr"] = dateStr(today, 'dmy', '');
 			data[todayStorageName]["trackData"] = {};
 			data[todayStorageName]["sitesLocked"] = false;
 			
@@ -188,24 +190,25 @@ function registerEvents() {
 }
 
 async function updateData(){
-	chrome.storage.local.get('settings', function(setting){
+	chrome.storage.local.get(null, function(result){
 		var validateKeyArray = ['settings'];
 		validateKeyArray.push(todayStorageName);
-		
-		for(var j=1; j <= Number(setting.numberOfDays); j++){
-			var dateObj = new Date();
-			
-			dateObj.setDate(dateObj.getDate() - j);
-			
-			var keyStr = "DataOf-" + dateStr(dateObj, 'dmy', '');
-			
-			validateKeyArray.push(keyStr);
+		alert(today);
+		if (result.hasOwnProperty('settings') && result.settings.hasOwnProperty('numberOfDays')){
+			for(var j=1; j <= Number(result.settings.numberOfDays); j++){
+				var dateObj = new Date();
+				
+				dateObj.setDate(dateObj.getDate() - j);
+				
+				var keyStr = "DataOf-" + dateStr(dateObj, 'dmy', '');
+				
+				validateKeyArray.push(keyStr);
+			}
 		}
 		
 		chrome.storage.local.get(null, function(result){
 			for(var k in result){
-				//console.log(result[k]);
-				if (!(k in validateKeyArray)){
+				if (!validateKeyArray.includes(k)){
 					chrome.storage.local.remove(k)
 				}
 			}
