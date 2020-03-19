@@ -25,6 +25,9 @@ var todayStorageName = "DataOf-" + todayStr('dmy', '');
 // An array of strings that hold the domain names of the websites that are supposed to be checked
 var websitesToTrack;
 
+// Set counter for set domains
+var runningCounter;
+
 var isFirstRun = false;
 
 
@@ -74,7 +77,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		
         chrome.storage.local.set(data, function(){});
 		
-		startUp('true');
+		startUp();
 		
 		console.log(data);
 	}else{
@@ -99,31 +102,10 @@ function startUp() {
     isUserActive = true;
 	
 	updateData();
+	
     // Setting up the listener that will check if a new day is there
     setInterval(function(){
-		//alert(today)
-		if(isNewDay()){
-			alert(23)
-			today = new Date();
-			
-			todayStorageName = "DataOf-" + dateStr(today, 'dmy', '');
-			
-			// Initialize the data objec that is to be placed in the localStorage
-			var data = {};
-			
-			data[todayStorageName] = {};
-				
-			// Store the values in the localStorage
-			data[todayStorageName]['totalTime'] = 0;
-			data[todayStorageName]["today"] = today;
-			data[todayStorageName]["todayStr"] = dateStr(today, 'dmy', '');
-			data[todayStorageName]["trackData"] = {};
-			data[todayStorageName]["sitesLocked"] = false;
-			
-			chrome.storage.local.set(data);
-			
-			updateData();
-		}
+		updateData();
     }, 1000);
 }
 
@@ -143,9 +125,10 @@ function registerEvents() {
     // This is fired when the active tab changes
     chrome.tabs.onActivated.addListener(function(activeInfo) {
 		chrome.pageAction.show(activeInfo.tabId);
-        updateActiveTabUrl();
+        
+		updateActiveTabUrl()
 		
-		changeTabAction()
+		//changeTabAction()
     });
 
     // Registering for onChanged event
@@ -154,9 +137,8 @@ function registerEvents() {
         if (changeInfo.url)
 			chrome.pageAction.show(tabId);
 		
-		updateActiveTabUrl();
-		
-		changeTabAction()
+		if(updateActiveTabUrl())
+			changeTabAction()
     });
 	
 	//For highlighted tab as well
@@ -165,13 +147,13 @@ function registerEvents() {
 	chrome.tabs.onHighlighted.addListener(function(tabId, changeInfo, tab){
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { // The argument of the call back function is an array of tabs
 			
-			if (tabs.length > 0)
+			if (tabs.length > 0){
+				if(updateActiveTabUrl())
+					changeTabAction()
+				
 				chrome.pageAction.show(tabId.tabIds['0']);
+			}
 		});
-		
-		updateActiveTabUrl();
-		
-		changeTabAction()
 	});
 
     // Registering for onFocusChanged event
@@ -185,15 +167,16 @@ function registerEvents() {
         } else {
             isUserActive = true;
         }
+		
         updateActiveTabUrl();
     });
 }
 
-async function updateData(){
+function updateData(){
 	chrome.storage.local.get(null, function(result){
 		var validateKeyArray = ['settings'];
 		validateKeyArray.push(todayStorageName);
-		alert(today);
+		
 		if (result.hasOwnProperty('settings') && result.settings.hasOwnProperty('numberOfDays')){
 			for(var j=1; j <= Number(result.settings.numberOfDays); j++){
 				var dateObj = new Date();
@@ -206,29 +189,87 @@ async function updateData(){
 			}
 		}
 		
-		chrome.storage.local.get(null, function(result){
-			for(var k in result){
-				if (!validateKeyArray.includes(k)){
-					chrome.storage.local.remove(k)
-				}
-			}
+		var checkTodayStorageName = "DataOf-" + dateStr(new Date(), 'dmy', '');
+		
+		if (!validateKeyArray.includes(checkTodayStorageName)){
 			
-			/* $.each(result, function(k,v){
-				if ($.inArray(k, validateKeyArray) == -1){
-					chrome.storage.local.remove(k)
+			today = new Date();
+			todayStorageName = checkTodayStorageName;
+			
+			// Initialize the data objec that is to be placed in the localStorage
+			var data = {};
+			
+			data[checkTodayStorageName] = {};
+				
+			// Store the values in the localStorage
+			data[checkTodayStorageName]['totalTime'] = 0;
+			data[checkTodayStorageName]["today"] = today;
+			data[checkTodayStorageName]["todayStr"] = dateStr(today, 'dmy', '');
+			data[checkTodayStorageName]["trackData"] = {};
+			data[checkTodayStorageName]["sitesLocked"] = false;
+			
+			chrome.storage.local.set(data);
+			
+			updateData();
+		}else{
+			chrome.storage.local.get(null, function(result){
+				for(var k in result){
+					if (!validateKeyArray.includes(k)){
+						chrome.storage.local.remove(k)
+					}
 				}
-			}); */
-		});
-	})
+				
+				/* $.each(result, function(k,v){
+					if ($.inArray(k, validateKeyArray) == -1){
+						chrome.storage.local.remove(k)
+					}
+				}); */
+			});
+		}
+	});
 }
 
 function changeTabAction(){
-	//alert("tab action");
+	var currentDomain = getActiveWebsite();
+	
+	if(hasValueDeep(websitesToTrack, currentDomain)){
+		runningCounter = setInterval(function(){ runCounter () }, 1000);
+	}else{
+		clearInterval(runningCounter);
+	}
+}
+
+function runCounter(){
+	chrome.storage.local.get(null, function(result){
+		if (result.hasOwnProperty(todayStorageName)){
+			var currentDomain = getActiveWebsite();
+			
+			if(currentDomain && hasValueDeep(websitesToTrack, currentDomain)){
+				if(result[todayStorageName]['trackData'].hasOwnProperty(currentDomain)){
+					result[todayStorageName]['trackData'][currentDomain] += 1;
+				}else{
+					result[todayStorageName]['trackData'][currentDomain] = 1;
+				}
+				chrome.storage.local.set(result);
+			}
+		}
+	});
+}
+
+function hasValueDeep(json, findValue) {
+    const values = Object.values(json);
+    let hasValue = values.includes(findValue);
+    values.forEach(function(value) {
+        if (typeof value === "object") {
+            hasValue = hasValue || hasValueDeep(value, findValue);
+        }
+    })
+    return hasValue;
 }
 
 // Returns the current website being used
 function getActiveWebsite() {
-	if(activeTabUrl != null)
+	if(activeTabUrl != null || activeTabUrl != '')
 		return extractDomain(activeTabUrl);
 	else
 		return false;
@@ -249,6 +290,8 @@ function updateActiveTabUrl() {
             activeTabUrl = tabs[0].url;
         }
     });
+	
+	return true;
 }
 
 /*
@@ -259,7 +302,10 @@ function updateActiveTabUrl() {
 * E.g. extractDomain("http://www.google.com/gmail/") would return "google.com"
 */
 function extractDomain(str) {
-    // Removing the protocol and www prefixes
+    if(str == '' || str == null)
+		return false;
+	
+	// Removing the protocol and www prefixes
     var strList = str.split(":\/\/");
     if (strList.length > 1) {
         str = strList[1];
@@ -273,7 +319,6 @@ function extractDomain(str) {
     return domainName;
 }
 
-
 /* 
 * Function : getTimeOnTwitter()
 * -------------------------------
@@ -284,7 +329,6 @@ function extractDomain(str) {
 function getTimeOnFbTwitter(){
     return totalTimeOnWebsites;
 }
-
 
 /*
 * Function : numDaysSinceUTC()

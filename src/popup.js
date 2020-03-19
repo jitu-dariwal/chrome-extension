@@ -9,8 +9,10 @@ var backgroundPage = chrome.extension.getBackgroundPage();
 $(document).ready(function(){
 	$('[data-toggle="tooltip"]').tooltip(); 
 	
-	if(backgroundPage.isFirstRun)
+	if(backgroundPage.isFirstRun){
 		$('#welcomeBox').show();
+		backgroundPage.isFirstRun = false;
+	}
 	
 	chrome.storage.local.get(null, function(result){
 		//console.log("call", result);
@@ -124,7 +126,7 @@ $(document).ready(function(){
 			var i = 0;
 			$.each(websites, function(k,v){
 				if(v != null && v != '')
-					websitesObj[i++] = v;
+					websitesObj[i++] = backgroundPage.extractDomain(v);
 			});
 			
 			settings['websitesToTrack'] = JSON.stringify(websitesObj);
