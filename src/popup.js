@@ -29,38 +29,7 @@ $(document).ready(function(){
 		
 		if(tab == 'setting'){
 			//console.log(backgroundPage.websitesToTrack);
-			
-			var str = '<table class="table">';
-			
-			$.each(backgroundPage.websitesToTrack, function(k,v){
-				str += '<tr>';
-					str += '<td width="80%">';
-						if ($.inArray(v, backgroundPage.defaultFixDomains) != -1)
-							str += '<input class="form-control form-control-sm" value="'+v+'" name="websites[]" readonly/>';
-						else
-							str += '<input class="form-control form-control-sm" value="'+v+'" name="websites[]"/>';
-					str += '</td>';
-					str += '<td width="20%">';
-						if ($.inArray(v, backgroundPage.defaultFixDomains) != -1)
-							str += '&nbsp;';
-						else
-							str += '<button class="btn btn-sm btn-danger removeMore"><i class="fa fa-minus"></i></button>';
-					str += '</td>';
-				str += '</tr>';
-			});
-			
-			str += '<tr>';
-				str += '<td width="80%">';
-					str += '<input class="form-control form-control-sm" name="websites[]"/>';
-				str += '</td>';
-				str += '<td width="20%">';
-					str += '<button class="btn btn-sm btn-success addMore"><i class="fa fa-plus"></i></button>';
-				str += '</td>';
-			str += '</tr>';
-			
-			str += '</table>';
-			
-			$('#websiteTd').html(str);
+			setWebSitesInputs();
 		}
 	});
 	
@@ -139,8 +108,106 @@ $(document).ready(function(){
 		}
 	});
 	
+	$(document).on('click', '.reSet', function(){
+		/* Bellow code for clear chrome local data */
+		chrome.storage.local.clear();
+		
+		/* Bellow code for reset local stogare value */
+		
+		backgroundPage.todayStorageName = "DataOf-" + backgroundPage.todayStr('dmy', '');
+        backgroundPage.totalTimeOnWebsites = 0;
+        
+		backgroundPage.websitesToTrack = backgroundPage.defaultFixDomains;
+		
+		// Initialize the data objec that is to be placed in the localStorage
+        var data = {};
+		
+		data['settings'] = {};
+		
+		data['settings']['alertTime'] = 30; // time in seconds
+		data['settings']['numberOfDays'] = 3; // Number of days, to hold data of that days 
+		data['settings']['websitesToTrack'] = JSON.stringify(backgroundPage.websitesToTrack);
+		
+		/* Below code for set test row data */
+			var demoDate = "DataOf-06032020";
+			
+			data[demoDate] = {};
+			
+			// Store the values in the localStorage
+			data[demoDate]['totalTime'] = 0;
+			data[demoDate]["today"] = backgroundPage.today;
+			data[demoDate]["todayStr"] = backgroundPage.todayStr('dmy', '');
+			data[demoDate]["trackData"] = {};
+			data[demoDate]["sitesLocked"] = false;
+		
+		/* End code for set test row data */
+		
+		data[backgroundPage.todayStorageName] = {};
+		
+        // Store the values in the localStorage
+        data[backgroundPage.todayStorageName]['totalTime'] = 0;
+        data[backgroundPage.todayStorageName]["today"] = backgroundPage.today;
+        data[backgroundPage.todayStorageName]["todayStr"] = backgroundPage.todayStr('dmy', '');
+        data[backgroundPage.todayStorageName]["trackData"] = {};
+        data[backgroundPage.todayStorageName]["sitesLocked"] = false;
+		
+        chrome.storage.local.set(data, function(){});
+		
+		backgroundPage.startUp();
+		
+		setWebSitesInputs();
+		
+		alert("Data reset successfully.")
+	});
+	
+	function setWebSitesInputs(){
+		chrome.storage.local.get(null, function(result){
+			//console.log("call", result);
+			
+			if (result.hasOwnProperty('settings') && result.settings.hasOwnProperty('alertTime'))
+				$('#alertTime').val(result.settings.alertTime)
+			
+			if (result.hasOwnProperty('settings') && result.settings.hasOwnProperty('numberOfDays'))
+				$('#numberOfDays').val(result.settings.numberOfDays)
+		});
+		
+		var str = '<table class="table">';
+			
+		$.each(backgroundPage.websitesToTrack, function(k,v){
+			str += '<tr>';
+				str += '<td width="80%">';
+					if ($.inArray(v, backgroundPage.defaultFixDomains) != -1)
+						str += '<input class="form-control form-control-sm" value="'+v+'" name="websites[]" readonly/>';
+					else
+						str += '<input class="form-control form-control-sm" value="'+v+'" name="websites[]"/>';
+				str += '</td>';
+				str += '<td width="20%">';
+					if ($.inArray(v, backgroundPage.defaultFixDomains) != -1)
+						str += '&nbsp;';
+					else
+						str += '<button class="btn btn-sm btn-danger removeMore"><i class="fa fa-minus"></i></button>';
+				str += '</td>';
+			str += '</tr>';
+		});
+		
+		str += '<tr>';
+			str += '<td width="80%">';
+				str += '<input class="form-control form-control-sm" name="websites[]"/>';
+			str += '</td>';
+			str += '<td width="20%">';
+				str += '<button class="btn btn-sm btn-success addMore"><i class="fa fa-plus"></i></button>';
+			str += '</td>';
+		str += '</tr>';
+		
+		str += '</table>';
+		
+		$('#websiteTd').html(str);
+	}
+	
 	$('#check').click(function(){
 		//alert(backgroundPage.getActiveWebsite());
+		
+		alert(backgroundPage.getTimeOnFbTwitter());
 		
 		chrome.storage.local.get(null, function(result){
 			console.log("call", result);

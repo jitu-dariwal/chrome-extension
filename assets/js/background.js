@@ -231,9 +231,10 @@ function updateData(){
 
 function changeTabAction(){
 	var currentDomain = getActiveWebsite();
-	
+	updateTotalTime()
 	if(hasValueDeep(websitesToTrack, currentDomain)){
 		runningCounter = setInterval(function(){ runCounter () }, 1000);
+		timmerCounter = setInterval(function(){ timeSpendCounter () }, 1000);
 	}else{
 		clearInterval(runningCounter);
 	}
@@ -247,11 +248,35 @@ function runCounter(){
 			if(currentDomain && hasValueDeep(websitesToTrack, currentDomain)){
 				if(result[todayStorageName]['trackData'].hasOwnProperty(currentDomain)){
 					result[todayStorageName]['trackData'][currentDomain] += 1;
+					totalTimeOnWebsites += 1;
 				}else{
 					result[todayStorageName]['trackData'][currentDomain] = 1;
+					totalTimeOnWebsites += 1;
 				}
 				chrome.storage.local.set(result);
 			}
+		}
+	});
+}
+
+function updateTotalTime(){
+	var totalTimeSpend = 0;
+	chrome.storage.local.get(null, function(result){
+		for(var k in result){
+			if(k != 'settings'){
+				for(var j in result[k]['trackData']){
+					totalTimeSpend += Number(result[k]['trackData'][j]);
+				}
+			}
+		}
+		totalTimeOnWebsites = totalTimeSpend;
+	});
+}
+
+function timeSpendCounter(){
+	chrome.storage.local.get(null, function(result){
+		if(totalTimeOnWebsites == Number(result.settings.alertTime)){
+			alert("Exxced the time.")
 		}
 	});
 }
